@@ -21,8 +21,8 @@ const createDummyDevices = async () => {
         for (let i = 1; i <= 1; i++) {
             devices.push({
               id: `device_${i}`,
-              latitude: 3.111184 + (Math.random() - 0.5) * 0.002,   // ~±100m around center
-              longitude: 101.583174 + (Math.random() - 0.5) * 0.002, // ~±100m around center
+              latitude: 3.110972, //3.111184 + (Math.random() - 0.5) * 0.002,   // ~±100m around center
+              longitude:  101.583055, //101.583174 + (Math.random() - 0.5) * 0.002, // ~±100m around center
               speed: 0,
               direction: 0,
               timestamp: new Date(),

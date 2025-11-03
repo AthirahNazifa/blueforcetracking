@@ -6,8 +6,8 @@ const { markCacheUpdated } = require("../controllers/deviceController");
 
 function initWebSocketDevice(broadcast) {
   
-  const WS_URL = "ws://localhost:8080";
-  // const WS_URL = "ws://192.168.0.83:8080";
+  //const WS_URL = "ws://localhost:8080";
+  const WS_URL = "ws://192.168.0.183:8080";
 
   const ws = new WebSocket(WS_URL);
 
@@ -21,7 +21,7 @@ function initWebSocketDevice(broadcast) {
   ws.on("message", async (message) => {
     try {
       const data = JSON.parse(message);
-
+      console.log("Received data", data);
       if (data.type !== "position" || !data.device_id) return;
       // --- UPDATE MAIN DEVICE TABLE ---
       const updated = await Device.findOneAndUpdate(

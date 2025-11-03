@@ -2,6 +2,7 @@
 .mapContainer {
   height: 100%;
   width: 100%;
+  position: relative;
 }
 
 .deviceMarker img {
@@ -71,4 +72,29 @@
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 14px;
+}
+
+.satelliteToggle {
+  position: absolute;
+  right: 12px;
+  bottom: 48px;
+  background-color: white;
+  color: black;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.satelliteToggle:hover {
+  background-color: #f2f2f2;
+}
+
+.satelliteToggle.active {
+  background-color: #0078ff;
+  color: white;
 }

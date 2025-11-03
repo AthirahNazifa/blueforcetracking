@@ -15,9 +15,10 @@ export default function MapView() {
   const markerRef = useRef(null); // gray marker
   const devicePopupRef = useRef(null);
   const measureModeRef = useRef(false);
-
   const { mapCenter, setMapCenter } = useMap();
+  const [isSatelliteVisible, setSatelliteVisible] = useState(false);
   const { devices } = useDevices?.() || { devices: [] };
+  const pathCoordsRef = useRef(new Map());
 
   const [measureMode, setMeasureMode] = useState(false);
   const [geojson, setGeojson] = useState({
@@ -26,7 +27,6 @@ export default function MapView() {
   });
   const [distance, setDistance] = useState(0);
 
- 
   const isValidCoord = (lat, lng) =>
     typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng);
 
@@ -57,17 +57,25 @@ export default function MapView() {
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style:
-        "http://localhost:3650/api/maps/asia_malaysia-brunei-singapura_openstreetmap/style.json",
+      style: "http://localhost:4000/style/malaysia-style",
       center: [101.5831753, 3.1111297],
-      zoom: 12,
+      zoom: 16,
+      pitch: 0,
+      bearing: 0,
+      antialias: true,
     });
 
     mapRef.current = map;
-    map.addControl(new maplibregl.NavigationControl(), "top-right");
     console.log("✅ Map loaded");
 
     map.on("load", () => {
+      map.dragRotate.enable();
+      map.touchZoomRotate.enable();
+      map.setMaxPitch(85);
+      
+      const nav = new maplibregl.NavigationControl({ visualizePitch: true });
+      map.addControl(nav, "top-right");
+      
       map.addSource("measure", { type: "geojson", data: geojson });
 
       map.addLayer({
@@ -86,6 +94,31 @@ export default function MapView() {
         paint: { "line-color": "#0000FF", "line-width": 2.5 },
         filter: ["in", "$type", "LineString"],
       });
+
+      map.addSource("device-path",{
+        type: "geojson",
+        data:{
+          type: "Feature",
+          geometry:{
+            type:"LineString",
+            coordinates:[],
+          },
+        },
+      });
+      map.addLayer({
+        id: "device-path-line",
+        type: "line",
+        source: "device-path",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": "#FF0000", // red line
+          "line-width": 3,
+        },
+      });
+      
     });
 
     window.parent.postMessage({ type: "MAP_READY" }, "*");
@@ -237,6 +270,44 @@ export default function MapView() {
       } else {
         markerEntry.marker.setLngLat([device.longitude, device.latitude]);
       }
+
+      if (!pathCoordsRef.current.has(device.device_id)) {
+        pathCoordsRef.current.set(device.device_id, []);
+      }
+    
+      const path = pathCoordsRef.current.get(device.device_id);
+      const currentCoord = [device.longitude, device.latitude];
+    
+      // Add new coordinate only if different from last
+      const last = path[path.length - 1];
+      if (!last || last[0] !== currentCoord[0] || last[1] !== currentCoord[1]) {
+        path.push(currentCoord);
+      }
+    
+      // Update per-device source
+      const sourceId = `device-path-${device.device_id}`;
+      if (!map.getSource(sourceId)) {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: { type: "LineString", coordinates: path },
+          },
+        });
+        map.addLayer({
+          id: `device-path-line-${device.device_id}`,
+          type: "line",
+          source: sourceId,
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": "#FF0000", "line-width": 3 },
+        });
+      } else {
+        const source = map.getSource(sourceId);
+        source.setData({
+          type: "Feature",
+          geometry: { type: "LineString", coordinates: path },
+        });
+      }
     });
   }, [devices]);
 
@@ -307,35 +378,54 @@ export default function MapView() {
     if (source) source.setData(geojson);
   }, [geojson]);
 
+  const toggleSatellite = () => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
+    const newVisible = !isSatelliteVisible;
+    setSatelliteVisible(newVisible);
+
+    if (map.getLayer("satellite-layer")) {
+      map.setLayoutProperty(
+        "satellite-layer",
+        "visibility",
+        newVisible ? "visible" : "none"
+      );
+      console.log(newVisible ? "Satellite ON" : "Satellite OFF");
+    } else {
+      console.warn("⚠️ No 'satellite-layer' found in your style JSON");
+    }
+  };
  // UI
   return (
     <>
-      <div ref={mapContainer} className={styles.mapContainer} />
-
-      <div className={styles.measureControl}>
-        <button
-          onClick={() => {
-            if(measureMode){
-              clearMeasure();
-            }
+    <div ref={mapContainer} className={styles.mapContainer} />
+  
+    <div className={styles.measureControl}>
+      <button
+        onClick={() => {
+          if (measureMode) clearMeasure();
           setMeasureMode(!measureMode);
         }}
-          className={`${styles.measureButton} ${measureMode ? styles.active : ""}`}
-        >
-          {measureMode ? "Exit Measure Mode" : "Measure Distance"}
-        </button>
-
-        {measureMode && (
-          <>
-            <div className={styles.measureDistanceBox}>
-              Distance: {distance} km
-            </div>
-            <button onClick={clearMeasure} className={styles.clearButton}>
-              Clear All Points
-            </button>
-          </>
-        )}
-      </div>
-    </>
+        className={`${styles.measureButton} ${measureMode ? styles.active : ""}`}
+      >
+        {measureMode ? "Exit Measure Mode" : "Measure Distance"}
+      </button>
+  
+      {measureMode && (
+        <>
+          <div className={styles.measureDistanceBox}>
+            Distance: {distance} km
+          </div>
+          <button onClick={clearMeasure} className={styles.clearButton}>
+            Clear All Points
+          </button>
+        </>
+      )}
+    </div>
+    <button onClick={toggleSatellite} className={styles.satelliteToggle}>
+        {isSatelliteVisible ? "Hide Satellite" : "Show Satellite"}
+      </button>
+  </>
+  
   );
 }
