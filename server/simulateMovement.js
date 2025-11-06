@@ -35,7 +35,7 @@ const Device = require('./models/Device');
 
       for (const device of devices){
         if (currentStep > TOTAL_STEPS){
-          console.log('Device ${device.id} reached destination');
+          console.log(`Device ${device.id} reached destination`);
           continue;
         }
     

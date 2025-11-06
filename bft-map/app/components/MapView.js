@@ -189,7 +189,7 @@ export default function MapView() {
 
     if (!map.__deviceMarkers) map.__deviceMarkers = new Map();
 
-    devices.forEach((device) => {
+    devices.forEach(device => {
       if (!isValidCoord(device.latitude, device.longitude)) return;
 
       let markerEntry = map.__deviceMarkers.get(device.device_id);
@@ -252,6 +252,10 @@ export default function MapView() {
             accuracy: 100,
           });
 
+          console.log("🔥 Map Click: Sending DEVICE_CLICKED message.");
+          console.log("   Full Device Object:", device);
+          console.log("   ID sent in payload:", device.device_id);
+
           window.parent.postMessage(
             {
               type: "DEVICE_CLICKED",
@@ -262,7 +266,7 @@ export default function MapView() {
                 longitude: device.longitude,
               },
             },
-            "*"
+            "http://localhost:3000" 
           );
         });
 

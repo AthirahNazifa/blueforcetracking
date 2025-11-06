@@ -11,20 +11,24 @@ export default function DevicePanel() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDevice, setSelectedDevice] = useState(null);
+  const [pendingDeviceId, setPendingDeviceId] = useState(null);
   const [address, setAddress] = useState("");
 
-  // ✅ Filter using `id` (actual property from your backend)
+  // Filter devices by search term
   const filteredDevices = devices.filter((device) =>
-    (device.id || device._id || "").toLowerCase().includes(searchTerm.toLowerCase())
+    (device.id || device._id || device.device_id || "") // Added device_id for searching
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
-  
 
+  // Handle setting selected device and updating map / address
   useEffect(() => {
     if (!selectedDevice) return;
 
     const latitude = Number(selectedDevice.latitude);
     const longitude = Number(selectedDevice.longitude);
 
+    // Reverse geocode to get address
     fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
     )
@@ -33,20 +37,70 @@ export default function DevicePanel() {
         if (data?.display_name) setAddress(data.display_name);
       });
 
+    // Center map
     setMapCenter({ lat: latitude, lng: longitude, accuracy: 100 });
 
-    //send to bft map
+    // Send message to embedded map iframe
     const iframe = document.getElementById("bft-map-iframe");
-    if (iframe && iframe.contentWindow) {
+    if (iframe?.contentWindow) {
       iframe.contentWindow.postMessage(
         {
           type: "FLY_TO_DEVICE",
           payload: { lat: latitude, lng: longitude },
         },
-        "*"
+        "http://localhost:3001" 
       );
     }
   }, [selectedDevice, setMapCenter]);
+
+  // Handle messages from the embedded map
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== 'http://localhost:3001') return;
+      console.log("Message received from BFT Map iframe:", event.data);
+      const { type, payload } = event.data || {};
+
+      if (type === "DEVICE_CLICKED" && payload?.device_id) {
+        
+        // FIX: Check against device_id, id, and _id for reliable lookup
+        const device = devices.find(
+          (d) => 
+            d.device_id === payload.device_id || 
+            d.id === payload.device_id || 
+            d._id === payload.device_id
+        );
+
+        if (device) {
+          console.log("DEVICE_CLICKED received. Panel showing details for:", payload.device_id);
+          setSelectedDevice(device);
+        } else {
+          // Device not loaded yet, remember for later
+          console.warn("Device clicked not found yet:", payload.device_id);
+          setPendingDeviceId(payload.device_id);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [devices]);
+
+  // Handle pending device click once devices are loaded
+  useEffect(() => {
+    if (pendingDeviceId && devices.length > 0) {
+      // Use the corrected lookup logic here too
+      const device = devices.find(
+        (d) => 
+          d.device_id === pendingDeviceId || 
+          d.id === pendingDeviceId || 
+          d._id === pendingDeviceId
+      );
+      if (device) {
+        setSelectedDevice(device);
+        setPendingDeviceId(null);
+      }
+    }
+  }, [pendingDeviceId, devices]);
 
   return (
     <div className={styles.panel}>
@@ -66,14 +120,13 @@ export default function DevicePanel() {
           <div className={styles.deviceList}>
             {filteredDevices.map((device) => (
               <div
-                key={device.id}
+                key={device.id || device._id || device.device_id}
                 className={styles.deviceItem}
                 onClick={() => setSelectedDevice(device)}
               >
-                <strong>{device.name || device.id}</strong>
+                <strong>{device.name || device.device_id || device.id}</strong>
                 <div className={styles.meta}>
-                  Last updated:{" "}
-                  {new Date(device.timestamp).toLocaleString()}
+                  Last updated: {new Date(device.timestamp).toLocaleString()}
                 </div>
               </div>
             ))}
@@ -88,8 +141,8 @@ export default function DevicePanel() {
             >
               <MdArrowBackIos size={20} />
             </button>
-
-            <h3>{selectedDevice.name || selectedDevice.id}</h3>
+            {/* Display device_id if name is not available */}
+            <h3>{selectedDevice.name || selectedDevice.device_id || selectedDevice.id}</h3> 
           </div>
 
           <div className={styles.imageSection}>
@@ -109,6 +162,9 @@ export default function DevicePanel() {
             </p>
             <p>
               <strong>Longitude:</strong> {selectedDevice.longitude}
+            </p>
+            <p>
+              <strong>Device ID:</strong> {selectedDevice.device_id}
             </p>
             <p>
               <strong>Last Updated:</strong>{" "}
