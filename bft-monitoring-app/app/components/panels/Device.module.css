@@ -6,6 +6,9 @@
   color: black; /* all text black */
 }
 
+.panel.open {
+  right: 0; /* slide in */
+}
 .searchHeader {
   padding: 1rem;
   border-bottom: 1px solid #ddd;

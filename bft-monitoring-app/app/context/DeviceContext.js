@@ -3,8 +3,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const DeviceContext = createContext();
 
-export const DeviceProvider = ({ children }) => {
+export const DeviceProvider = ({ children, setActivePanel }) => {
   const [devices, setDevices] = useState([]);
+  const [messageData, setMessageData] = useState(null); // 🆕 Store message data
 
   const fetchDevices = async () => {
     try {
@@ -28,8 +29,30 @@ export const DeviceProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // 🆕 Add global message listener
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== "http://localhost:3001") return;
+
+      const { type, payload } = event.data || {};
+      if (type === "DEVICE_CLICKED" && payload?.device_id) {
+        console.log("📩 Message received in DeviceContext:", { type, payload }); // 🐛 Debugging log
+        setMessageData({ type, payload }); // Store the message data
+
+        // 🆕 Automatically activate the Devices panel
+        if (setActivePanel) {
+          console.log("🧩 Activating Devices panel via setActivePanel");
+          setActivePanel("Devices");
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [setActivePanel]);
+
   return (
-    <DeviceContext.Provider value={{ devices, fetchDevices }}>
+    <DeviceContext.Provider value={{ devices, fetchDevices, messageData }}>
       {children}
     </DeviceContext.Provider>
   );
