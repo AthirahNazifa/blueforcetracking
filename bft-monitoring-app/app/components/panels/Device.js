@@ -160,7 +160,7 @@ export default function DevicePanel() {
               <strong>Longitude:</strong> {selectedDevice.longitude}
             </p>
             <p>
-              <strong>Device ID:</strong> {selectedDevice.device_id}
+              <strong>Device ID:</strong> {selectedDevice.id}
             </p>
             <p>
               <strong>Last Updated:</strong>{" "}

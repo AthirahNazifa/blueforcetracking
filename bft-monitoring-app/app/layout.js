@@ -19,9 +19,7 @@ export default function RootLayout({ children }) {
         {/* ✅ Wrap entire app in providers once */}
         <MapProvider>
           <DeviceProvider setActivePanel={setActivePanel}>
-            {/* Removed PanelProvider wrapper
-            <PanelProvider>
-            */}
+           
               <Topbar />
               <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
                 <Sidebar setActivePanel={setActivePanel} />
@@ -49,9 +47,7 @@ export default function RootLayout({ children }) {
                   )} */}
                 </div>
               </div>
-            {/* Removed PanelProvider closing tag
-            </PanelProvider>
-            */}
+           
           </DeviceProvider>
         </MapProvider>
       </body>
