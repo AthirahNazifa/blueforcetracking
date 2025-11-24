@@ -11,7 +11,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: true, // safer: allow MapTiler but keep security on
+      webSecurity: true, 
     },
   });
 

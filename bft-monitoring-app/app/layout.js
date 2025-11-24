@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
           <DeviceProvider setActivePanel={setActivePanel}>
            
               <Topbar />
-              <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
+              <div style={{ display: "flex", height: "100vh" }}>
                 <Sidebar setActivePanel={setActivePanel} />
 
                 <div style={{ flex: 1, position: "relative" }}>
@@ -63,6 +63,6 @@ const panelStyle = {
   height: "100%",
   background: "#fff",
   boxShadow: "2px 0 8px rgba(0,0,0,0.1)",
-  zIndex: 10,
+  zIndex: 2000,   // increase this
   overflowY: "auto",
 };

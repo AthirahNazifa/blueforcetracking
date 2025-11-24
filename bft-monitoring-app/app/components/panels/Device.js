@@ -150,23 +150,31 @@ export default function DevicePanel() {
           </div>
 
           <div className={styles.infoSection}>
-            <p>
-              <strong>Address:</strong> {address || "Resolving..."}
-            </p>
-            <p>
-              <strong>Latitude:</strong> {selectedDevice.latitude}
-            </p>
-            <p>
-              <strong>Longitude:</strong> {selectedDevice.longitude}
-            </p>
-            <p>
-              <strong>Device ID:</strong> {selectedDevice.id}
-            </p>
-            <p>
-              <strong>Last Updated:</strong>{" "}
-              {new Date(selectedDevice.timestamp).toLocaleString()}
-            </p>
+            
+          <div className={styles.infoRow}>
+            <span className={styles.label}>Address</span>
+            <span className={styles.value}>{address || "Resolving..."}</span>
           </div>
+          <div className={styles.infoRow}>
+            <span className={styles.label}>Latitude</span>
+            <span className={styles.value}>{selectedDevice.latitude}</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.label}>Longitude</span>
+            <span className={styles.value}>{selectedDevice.longitude}</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.label}>Device ID</span>
+            <span className={styles.value}>{selectedDevice.id}</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.label}>Last Updated</span>
+            <span className={styles.value}>
+              {new Date(selectedDevice.timestamp).toLocaleString()}
+            </span>
+          </div>
+        </div>
+
         </div>
       )}
     </div>

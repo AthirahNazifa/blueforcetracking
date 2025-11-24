@@ -42,42 +42,58 @@
 /* Floating control near navigation buttons */
 .measureControl {
   position: absolute;
-  top: 10px;
-  right: 60px; /* Adjust to sit beside zoom buttons */
+  right: 50px;
+  bottom: 90px; 
   z-index: 5;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse; /* display new buttons on top */
   align-items: flex-end;
   gap: 6px;
 }
 
+/* Measure button */
 .measureButton {
-  background: #fff;
-  color: #000;
-  border: 1px solid #007bff;
+  background: #1540ff;
+  color: #ffffff;
+  border: 1px solid black;
   border-radius: 5px;
   padding: 6px 10px;
   cursor: pointer;
   transition: 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .measureButton.active {
-  background: #007bff;
+  background: #ff0000;
   color: #fff;
 }
 
+/* Distance box slightly bigger */
 .measureDistanceBox {
   background: #fff;
   border: 1px solid #007bff;
   border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 14px;
+  padding: 10px 20px; /* bigger padding */
+  font-size: 15px;   /* slightly bigger text */
+}
+
+/* Clear button smaller */
+.clearButton {
+  background: #ffae00;
+  color: #ffffff;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 4px 8px; /* smaller padding */
+  font-size: 13px;  /* smaller text */
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .satelliteToggle {
   position: absolute;
-  right: 12px;
-  bottom: 48px;
+  right: 48px; /* move beside sidebar (adjust to your sidebar width + gap) */
+  bottom: 50px;
   background-color: white;
   color: black;
   padding: 8px 14px;
@@ -85,9 +101,12 @@
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  z-index: 10;
+  z-index: 5;
   cursor: pointer;
   transition: background 0.2s ease;
+}
+.satelliteToggle:hover {
+  background-color: #f2f2f2;
 }
 
 .satelliteToggle:hover {

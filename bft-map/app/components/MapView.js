@@ -74,7 +74,7 @@ export default function MapView() {
       map.setMaxPitch(85);
       
       const nav = new maplibregl.NavigationControl({ visualizePitch: true });
-      map.addControl(nav, "top-right");
+      map.addControl(nav, "bottom-right");
       
       map.addSource("measure", { type: "geojson", data: geojson });
 

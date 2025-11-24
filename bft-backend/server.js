@@ -24,7 +24,7 @@ app.use(express.json());
 app.use("/api", deviceRoutes);
 
 io.on("connection", (socket) => {
-  console.log("Frontend connected:", socket.id);
+  //console.log("Frontend connected:", socket.id);
 
   socket.on("disconnect", () => {
     console.log("Frontend disconnected:", socket.id);

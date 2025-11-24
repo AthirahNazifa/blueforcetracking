@@ -1,5 +1,3 @@
-
-
 import { MapProvider } from "@context/MapContext";
 import { DeviceProvider } from "@context/DeviceContext";
 
