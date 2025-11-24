@@ -18,7 +18,7 @@ The project consists of **three main components** and an optional **Martin Tile 
 
 Before starting, ensure the following are installed and working on your system:
 
-* **Martin Tile Server** – installed and running on **Linux Ubuntu**
+* **Martin Tile Server** – installed and running on **Linux Ubuntu** (https://maplibre.org/martin/installation.html)
 * **Node.js** (version ≥ 18.x)
 * **npm** (Node Package Manager)
 * **Visual Studio Code** or any preferred code editor
