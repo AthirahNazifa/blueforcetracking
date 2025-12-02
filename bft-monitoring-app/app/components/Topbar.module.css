@@ -1,85 +1,96 @@
 .topbar {
-  position: fixed; /* stays on top */
+  position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px; /* match the layout.js subtraction */
-  background: transparent;
+  left: 50px; /* leaves room for sidebar */
+  width: calc(100% - 50px);
+  height: 60px;
+  background: #004675;
+  backdrop-filter: blur(1px);
+  box-shadow: 0 2px 6px rgba(105, 61, 2, 0.733);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
+  justify-content: space-between; /* three-part layout */
+  padding: 0 12px;
   z-index: 1000;
 }
 
-.left {
+/* Center stack */
+.center {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  z-index: 1;
+  gap: 0; 
+  pointer-events: auto;
+  flex: 1; /* take available space */
+}
+
+/* NEW: Header group for logo and title text */
+.header {
+  display: flex;
+  align-items: center; /* Vertically align the image and text */
+  gap: 10px; /* Space between the BFT logo and the H1 text */
+}
+
+/* NEW: Style for the BFT SVG logo */
+.header .logo {
+  height: 28px; /* Adjust height for visual balance with the text */
+  width: auto;
+  object-fit: contain;
+}
+
+/* NEW: Style for the main title text */
+.header h1 {
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  margin: 0; /* Important: Removes default H1 margin */
+  padding: 0;
+  letter-spacing: 1px; /* Optional: Adds a touch of modern style */
 }
 
 .iconWrapper img {
+  height: 40px;
+  width: auto;
   object-fit: contain;
-  position: fixed;
-  top: 40px;
-  left: 0px;
-  width: 100%;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: top 24px;;
-  z-index: 1000;
 }
 
-.title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-weight: 700;
-  font-size: 24px;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgb(0, 0, 0);
-  pointer-events: none; /* so clicks pass through */
-}
-
+/* Right nav */
 .nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
-  height: 100%;
-  margin-right: 18px; /* move all nav items slightly to the left */
-
+  gap: 20px; 
+  pointer-events: auto;
 }
 
+/* Base style for nav link */
 .navLink {
-  color: #000000;
-  text-shadow: 2px 2px 5px rgb(255, 255, 255);
+  color: #fff;
   font-size: 15px;
   opacity: 0.9;
   transition: opacity 0.2s;
-  display: flex;
-  align-items: center;
+  text-decoration: none; 
 }
+
 .navLink:hover {
   opacity: 1;
 }
 
-.icon {
-  font-size: 22px;
-  color: #000000;
-  opacity: 0.9;
-  transition: opacity 0.2s;
+/* Style for links that contain both an icon and text */
+.navLinkIcon {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-  
+  gap: 6px; 
 }
+
+/* Icon style remains similar */
+.icon {
+  font-size: 18px; 
+  color: #fff;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
 .icon:hover {
   opacity: 1;
 }

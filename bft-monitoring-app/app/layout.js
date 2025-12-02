@@ -19,35 +19,35 @@ export default function RootLayout({ children }) {
         {/* ✅ Wrap entire app in providers once */}
         <MapProvider>
           <DeviceProvider setActivePanel={setActivePanel}>
-           
-              <Topbar />
-              <div style={{ display: "flex", height: "100vh" }}>
-                <Sidebar setActivePanel={setActivePanel} />
 
-                <div style={{ flex: 1, position: "relative" }}>
-                  {children}
+            <Topbar />
+            <div style={{ display: "flex", height: "100vh" }}>
+              <Sidebar setActivePanel={setActivePanel} />
 
-                  {activePanel === "Search" && (
-                    <div style={panelStyle}>
-                      <SearchPanel />
-                    </div>
-                  )}
+              <div style={{ flex: 1, position: "relative" }}>
+                {children}
 
-                  {activePanel === "Devices" && (
-                    <div style={panelStyle}>
-                      <DevicePanel />
-                    </div>
-                  )}
+                {activePanel === "Search" && (
+                  <div style={panelStyle}>
+                    <SearchPanel />
+                  </div>
+                )}
 
-                  {/* Uncomment when AddDevicePanel is ready */}
-                  {/* {activePanel === "Add Device" && (
+                {activePanel === "Devices" && (
+                  <div style={panelStyle}>
+                    <DevicePanel />
+                  </div>
+                )}
+
+                {/* Uncomment when AddDevicePanel is ready */}
+                {/* {activePanel === "Add Device" && (
                     <div style={panelStyle}>
                       <AddDevicePanel />
                     </div>
                   )} */}
-                </div>
               </div>
-           
+            </div>
+
           </DeviceProvider>
         </MapProvider>
       </body>
