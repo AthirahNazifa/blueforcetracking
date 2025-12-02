@@ -6,7 +6,7 @@ const { markCacheUpdated } = require("../controllers/deviceController");
 
 function initWebSocketDevice(broadcast) {
   
-  //const WS_URL = "ws://localhost:8080";
+ //const WS_URL = "ws://localhost:8080";
   const WS_URL = "ws://192.168.0.183:8080";
 
   const ws = new WebSocket(WS_URL);

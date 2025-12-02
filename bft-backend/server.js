@@ -7,6 +7,7 @@ const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const initWebSocketDevice = require("./utils/websockethandler");
 const deviceRoutes = require("./routes/deviceRoutes");
+const playbackRoutes = require("./routes/playbackRoutes");
 const cors = require("cors");
 const app = express(); 
 const server = http.createServer(app);
@@ -21,13 +22,15 @@ const io = new Server(server, {
 // declare middleware
 app.use(cors({ origin: "*" }));
 app.use(express.json());
+
 app.use("/api", deviceRoutes);
+//app.use("/api", playbackRoutes);
 
 io.on("connection", (socket) => {
   //console.log("Frontend connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("Frontend disconnected:", socket.id);
+    //console.log("Frontend disconnected:", socket.id);
   });
 });
 
