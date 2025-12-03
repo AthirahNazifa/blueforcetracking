@@ -1,5 +1,5 @@
 .panel {
-  background: rgba(255, 255, 255, 0.1); /* light grey transparent */
+  background: #ffffff; /* light grey transparent */
   height: 100vh;
   overflow-y: auto;
   border-right: 1px solid #ccc;
@@ -12,14 +12,14 @@
 .searchHeader {
   padding: 1rem;
   border-bottom: 1px solid #ddd;
-  background: rgb(0, 129, 189);
+  background: rgb(180, 180, 180);
 }
 
 .searchHeader h2 {
   margin: 0 0 0.5rem 0;
   font-size: 18px;
   font-weight: bold;
-  color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
 }
 
 .searchInput {
@@ -36,7 +36,7 @@
 }
 
 .deviceItem {
-  background: rgb(0, 0, 0);
+  background: rgb(7, 141, 204);
   color: #ffffff; /* white font */
   padding: 12px;
   border-radius: 6px;
@@ -64,16 +64,18 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
 }
 
 .detailsHeader {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 1rem;
+  padding: 0.5rem 1rem;   /* reduced vertical padding */
   border-bottom: 1px solid #ddd;
-  background: rgb(0, 123, 180);
+  background: rgb(180, 180, 180);
+  height: 60px;           /* fixed height for consistency */
+  line-height: 1.2;       /* tighter text spacing */
 }
 
 .backButton {

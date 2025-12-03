@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { MapProvider } from "@context/MapContext";
 import { DeviceProvider } from "@context/DeviceContext";
-// Removed PanelProvider import
 import Topbar from "@components/Topbar";
 import Sidebar from "@components/Sidebar";
 import SearchPanel from "@components/panels/Search";
 import DevicePanel from "@components/panels/Device";
+import Playback from "@components/panels/Playback";
 // import AddDevicePanel from "@components/panels/AddDevice";
 import "./globals.css";
 
@@ -15,54 +15,49 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body style={{ margin: 0 }}>
+      <body className="app-root">
         {/* ✅ Wrap entire app in providers once */}
         <MapProvider>
           <DeviceProvider setActivePanel={setActivePanel}>
-
+            {/* Topbar always fixed at top */}
             <Topbar />
-            <div style={{ display: "flex", height: "100vh" }}>
-              <Sidebar setActivePanel={setActivePanel} />
 
-              <div style={{ flex: 1, position: "relative" }}>
-                {children}
+            {/* Sidebar fixed on the left */}
+            <Sidebar setActivePanel={setActivePanel} />
 
-                {activePanel === "Search" && (
-                  <div style={panelStyle}>
-                    <SearchPanel />
-                  </div>
-                )}
+            {/* Main content area */}
+            <div className="mainContent">
+              {children}
 
-                {activePanel === "Devices" && (
-                  <div style={panelStyle}>
-                    <DevicePanel />
-                  </div>
-                )}
+              {/* Panels slide in under Topbar */}
+              {activePanel === "Search" && (
+                <div className="panel open">
+                  <SearchPanel />
+                </div>
+              )}
 
-                {/* Uncomment when AddDevicePanel is ready */}
-                {/* {activePanel === "Add Device" && (
-                    <div style={panelStyle}>
-                      <AddDevicePanel />
-                    </div>
-                  )} */}
-              </div>
+              {activePanel === "Devices" && (
+                <div className="panel open">
+                  <DevicePanel />
+                </div>
+              )}
+
+              {activePanel === "Record Playback" && (
+                <div className="panel open">
+                  <Playback />
+                </div>
+              )}
+              
+              {/* Uncomment when AddDevicePanel is ready */}
+              {/* {activePanel === "Add Device" && (
+                <div className="panel open">
+                  <AddDevicePanel />
+                </div>
+              )} */}
             </div>
-
           </DeviceProvider>
         </MapProvider>
       </body>
     </html>
   );
 }
-
-const panelStyle = {
-  position: "absolute",
-  top: 0,
-  left: "0px",
-  width: "400px",
-  height: "100%",
-  background: "#fff",
-  boxShadow: "2px 0 8px rgba(0,0,0,0.1)",
-  zIndex: 2000,   // increase this
-  overflowY: "auto",
-};

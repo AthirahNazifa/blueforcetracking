@@ -88,7 +88,7 @@ export default function SearchPanel() {
   };
 
   return (
-    <div className={styles.container}>
+   
     <div className={styles.panel}>
       
       {/* Header */}
@@ -141,7 +141,6 @@ export default function SearchPanel() {
         </button>
       </div>
     </div>
-  </div>
   
   );
 }
