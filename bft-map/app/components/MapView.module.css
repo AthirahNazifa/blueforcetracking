@@ -1,7 +1,7 @@
 /* Map container */
 .mapContainer {
-  height: 100%;
   width: 100%;
+  height: 100%;
   position: relative;
 }
 
@@ -92,7 +92,7 @@
 
 .satelliteToggle {
   position: absolute;
-  right: 48px; /* move beside sidebar (adjust to your sidebar width + gap) */
+  right: 50px; /* move beside sidebar (adjust to your sidebar width + gap) */
   bottom: 50px;
   background-color: white;
   color: black;
