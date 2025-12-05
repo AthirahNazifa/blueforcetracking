@@ -1,133 +1,141 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
 
-/* =========================
-   Theme Variables
-========================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* =========================
+     Branding & Primary Colors
+  ========================= */
+  --primary-darkest: #00253D;  /* main brand color */
+  --primary-dark:    #02385C;
+  --primary:         #0070BC;
+  --primary-light:   #024B7C;
+  --primary-bright:  #188BD9;
+  --primary-extra:   #3BBDFF;
+  --primary-pale:    #8BD0FF;
+  --primary-faint:   #C3E7FF;
+  --primary-soft:    #d3edfd;
+
+  /* =========================
+     Button Colors
+  ========================= */
+  --btn-primary:   #0070BC;   /* strong brand blue */
+  --btn-secondary: #024B7C;   /* darker blue for contrast */
+  --btn-info:      #3BBDFF;   /* bright cyan for highlights */
+  --btn-neutral:   #BABABA;   /* soft gray for passive actions */
+  --btn-dark:      #1F2937;   /* slate for dark mode or overlays */
+  --btn-light:     #F3F4F6;   /* light gray for clean UI */
+  --btn-teal:      #017780;   /* accent teal for cockpit feel */
+  --btn-amber:     #F59E0B;   /* warm amber for alerts or toggles */
+  --btn-gold:      #E59545;   /* warm gold (you already defined this) */
+  --btn-success: #45E562; 
+  --btn-danger: #CC423D; 
+  --btn-warning: #E5BB45;
+  /* =========================
+     Neutral Colors
+  ========================= */
+  --black: #000000;
+  --grey-dark: #828282;
+  --grey-medium: #BABABA;
+  --white: #FFFFFF;
+  --beige: #F4F3F0;
+
+  /* =========================
+     Gradients
+  ========================= */
+  --gradient-primary: linear-gradient(90deg, #8BD0FF, #188BD9);
+  --gradient-dark: linear-gradient(180deg, #188BD9, #00253D);
+
+  /* =========================
+     Neighbour / Accent Colors
+  ========================= */
+  --accent-teal: #017780;
+  --accent-cyan: #00AFBC;
+
+  /* =========================
+     Panel Colors
+  ========================= */
+  --panel-border: #ccc;
+  --panel-header-bg: #d9f0fc;
+  --panel-header-text: #004675;
+  --panel-bg: #ffffff;
+  
+  /* =========================
+     Grey Scale (for panels)
+  ========================= */
+  --grey-50: #f9fafb;
+  --grey-100: #f3f4f6;
+  --grey-200: #e5e7eb;
+  --grey-300: #d1d5db;
+  --grey-900: #111827;
+  --primary-50: #eff6ff;
+  --primary-200: #bfdbfe;
+  --primary-700: #1d4ed8;
+  --primary-900: #1e3a8a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
-/* =========================
-   Base Reset
-========================= */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--foreground);
-  background: var(--background);
   overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-
-/* =========================
-   Layout Containers
-========================= */
 .app-root {
-  display: flex;
+  position: relative;
   height: 100vh;
   width: 100vw;
-  flex-direction: column;
 }
 
-/* =========================
-   Topbar
-========================= */
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 60px;
-  width: 100%;
-  background: #004675;
-  color: #fff;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* =========================
-   Sidebar
-========================= */
+/* Sidebar container positioning only */
 .sidebarWrapper {
   position: fixed;
-  top: 60px;
+  top: 60px;           /* below topbar */
   left: 0;
+  width: 30px;         /* sidebar column width */
   height: calc(100vh - 60px);
-  width: 50px;
-  background: #004675;
-  color: white;
-  z-index: 1500;
+  z-index: 1000;       /* above map, below panels */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  padding-top: 10px;
 }
 
-/* =========================
-   Main Content
-========================= */
-.mainContent {
-  position: absolute;
-  top: 60px;   /* align under topbar */
-  left: 50px;  /* align beside sidebar */
-  width: calc(100vw - 50px);
-  height: calc(100vh - 60px);
-  overflow: hidden;
-}
-
-/* =========================
-   Panels
-========================= */
-.panel {
-  position: absolute;
-  top: 0;
-  left: -400px;
-  width: 400px;
-  height: 100%;
-  background: #000000;
-  z-index: 1600;
-  overflow-y: auto;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
-  transition: left 0.3s ease;
-}
-
-.panel.open {
-  left: 0;
-}
-
-/* =========================
-   Map Iframe
-========================= */
+/* Other layout classes remain the same */
 .mapIframe {
+  position: absolute;
+  top: 0; 
+  left: 0;
   width: 100%;
   height: 100%;
   border: none;
-  display: block;
+  z-index: 0;
 }
+
+.topbar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 60px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* panel.module.css or global.css */
+/* NOTE: Panel styles are now handled by CSS modules in each panel component */
+/* Global panel styles removed to avoid conflicts with CSS modules */
+
+.mainContent {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+

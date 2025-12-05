@@ -94,10 +94,8 @@ export default function DevicePanel() {
     setPendingDeviceId(null);
   };
 
-  const isOpen = !!selectedDevice || searchTerm.length > 0 || devices.length > 0;
-
   return (
-    <div className={`${styles.panel} ${isOpen ? styles.open : ""}`}>
+    <div className={`${styles.panel} ${styles.open}`}>
       {!selectedDevice ? (
         <>
           <div className={styles.searchHeader}>
@@ -105,7 +103,7 @@ export default function DevicePanel() {
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="Search devices by ID..."
+              placeholder="Search devices..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

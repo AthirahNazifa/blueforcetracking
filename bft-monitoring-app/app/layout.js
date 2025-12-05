@@ -7,7 +7,7 @@ import Sidebar from "@components/Sidebar";
 import SearchPanel from "@components/panels/Search";
 import DevicePanel from "@components/panels/Device";
 import Playback from "@components/panels/Playback";
-// import AddDevicePanel from "@components/panels/AddDevice";
+import MapEmbed from "@components/MapEmbed"; // use your existing component
 import "./globals.css";
 
 export default function RootLayout({ children }) {
@@ -16,45 +16,25 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="app-root">
-        {/* ✅ Wrap entire app in providers once */}
+        {/* MapProvider wraps everything so MapEmbed and other components can access it */}
         <MapProvider>
           <DeviceProvider setActivePanel={setActivePanel}>
-            {/* Topbar always fixed at top */}
+            
+            {/* Map sits behind UI */}
+            <MapEmbed />
+
+            {/* Topbar and Sidebar overlay */}
             <Topbar />
+            <Sidebar activePanel={activePanel} setActivePanel={setActivePanel} />
 
-            {/* Sidebar fixed on the left */}
-            <Sidebar setActivePanel={setActivePanel} />
+            {/* Panels slide over map */}
+            {activePanel === "Search" && <SearchPanel />}
+            {activePanel === "Devices" && <DevicePanel />}
+            {activePanel === "Record Playback" && <Playback />}
 
-            {/* Main content area */}
-            <div className="mainContent">
-              {children}
+            {/* Optional children rendered over map */}
+            <div className="mainContent">{children}</div>
 
-              {/* Panels slide in under Topbar */}
-              {activePanel === "Search" && (
-                <div className="panel open">
-                  <SearchPanel />
-                </div>
-              )}
-
-              {activePanel === "Devices" && (
-                <div className="panel open">
-                  <DevicePanel />
-                </div>
-              )}
-
-              {activePanel === "Record Playback" && (
-                <div className="panel open">
-                  <Playback />
-                </div>
-              )}
-              
-              {/* Uncomment when AddDevicePanel is ready */}
-              {/* {activePanel === "Add Device" && (
-                <div className="panel open">
-                  <AddDevicePanel />
-                </div>
-              )} */}
-            </div>
           </DeviceProvider>
         </MapProvider>
       </body>

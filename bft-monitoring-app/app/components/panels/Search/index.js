@@ -88,12 +88,11 @@ export default function SearchPanel() {
   };
 
   return (
-   
-    <div className={styles.panel}>
+    <div className={`${styles.panel} ${styles.open}`}>
       
       {/* Header */}
       <div className={styles.searchHeader}>
-        <h1 className={styles.heading}>Search Location</h1>
+        <h1 className={styles.heading}>Location Details</h1>
       </div>
   
       <div className={styles.section}>
@@ -136,7 +135,7 @@ export default function SearchPanel() {
   
       {/* Utility Buttons */}
       <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={handleClear}>
+        <button className={styles.clearButton} onClick={handleClear}>
           Clear Fields
         </button>
       </div>
