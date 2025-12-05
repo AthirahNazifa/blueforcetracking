@@ -1,0 +1,144 @@
+/* =========================
+   Profile Dropdown
+========================= */
+.profileContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profileButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  width: 36px;
+  height: 36px;
+}
+
+.profileButton:hover {
+  background-color: #ffffff15;
+  box-shadow: 0 0 6px rgba(71, 71, 71, 0.6);
+}
+
+.profileButton.active {
+  background-color: #ffffff15;
+  box-shadow: 0 0 6px rgba(71, 71, 71, 0.6);
+}
+
+.profileImage {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.profileIconFallback {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  color: #ffff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.profileContainer:hover .tooltip {
+  opacity: 1;
+}
+
+/* Dropdown Menu */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  min-width: 200px;
+  z-index: 3000;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdownItem:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdownItem:active {
+  background-color: #e8e8e8;
+}
+
+.dropdownIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.dropdownItem:hover .dropdownIcon {
+  color: var(--primary);
+}
+
+.dropdownText {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Special styling for sign out */
+.dropdownItem:last-child {
+  border-top: 1px solid #eee;
+  color: #cc423d;
+}
+
+.dropdownItem:last-child .dropdownIcon {
+  color: #cc423d;
+}
+
+.dropdownItem:last-child:hover {
+  background-color: #fee;
+}
+

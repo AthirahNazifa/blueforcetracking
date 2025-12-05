@@ -1,19 +1,22 @@
 "use client";
 import Link from "next/link";
-import { FaUser, FaMap } from "react-icons/fa";
+import { FaMap } from "react-icons/fa";
+import { usePathname } from "next/navigation";
+import ProfileDropdown from "@components/Profile";
 import styles from "./Topbar.module.css";
 
 export default function Topbar() {
+  const pathname = usePathname();
+
   const menuItems = [
     { name: "Map View", icon: <FaMap size={20} />, href: "/map" },
-    { name: "Profile", icon: <FaUser size={20} />, href: "/profile" },
   ];
 
   return (
     <div className={styles.topbar}>
       {/* Left icon */}
       <div className={styles.iconWrapper}>
-        <img src="/icons/kemalak_icon.png" alt="Kemalak Icon" />
+        <img src="/icons/kemalak_white.png" alt="Kemalak Icon" />
       </div>
 
       {/* Centered title + logo */}
@@ -26,14 +29,23 @@ export default function Topbar() {
 
       {/* Right nav */}
       <div className={styles.nav}>
-        {menuItems.map((item) => (
-          <div key={item.name} className={styles.menuItem}>
-            <Link href={item.href} className={styles.button}>
-              {item.icon}
-            </Link>
-            <span className={styles.tooltip}>{item.name}</span>
-          </div>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <div
+              key={item.name}
+              className={`${styles.menuItem} ${isActive ? styles.active : ""}`}
+            >
+              <Link href={item.href} className={styles.button}>
+                {item.icon}
+              </Link>
+              <span className={styles.tooltip}>{item.name}</span>
+            </div>
+          );
+        })}
+
+        {/* Profile Dropdown */}
+        <ProfileDropdown />
       </div>
     </div>
   );
