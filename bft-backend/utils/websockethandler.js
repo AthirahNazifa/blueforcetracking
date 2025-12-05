@@ -5,8 +5,7 @@ const { markCacheUpdated } = require("../controllers/deviceController");
 
 
 function initWebSocketDevice(broadcast) {
-  
- //const WS_URL = "ws://localhost:8080";
+
   const WS_URL = "ws://192.168.0.183:8080";
 
   const ws = new WebSocket(WS_URL);
@@ -22,9 +21,9 @@ function initWebSocketDevice(broadcast) {
     try {
       const data = JSON.parse(message);
       console.log("Received data", data);
-  
+
       if (data.type !== "position" || !data.device_id) return;
-  
+
       if (
         typeof data.latitude !== "number" ||
         typeof data.longitude !== "number" ||
@@ -34,19 +33,19 @@ function initWebSocketDevice(broadcast) {
         console.warn(`⚠️ Invalid coordinates from device ${data.device_id}`);
         return; // stop here, skip invalid message
       }
-  
+
       // update device info in DB
       const updated = await Device.findOneAndUpdate(
         { id: data.device_id },
         {
           latitude: data.latitude,
           longitude: data.longitude,
-          timestamp: 
-          data.timestamp ? new Date(data.timestamp) : new Date(),
+          timestamp:
+            data.timestamp ? new Date(data.timestamp) : new Date(),
         },
         { new: true, upsert: true, setDefaultsOnInsert: true }
       );
-  
+
       markCacheUpdated();
 
       // device log entry
@@ -62,7 +61,7 @@ function initWebSocketDevice(broadcast) {
       } catch (dbErr) {
         console.error("⚠️ Failed to write DeviceLog:", dbErr.message);
       }
-      
+
       // broadcast to frontend clients
       if (broadcast) {
         broadcast({

@@ -9,13 +9,13 @@ const initWebSocketDevice = require("./utils/websockethandler");
 const deviceRoutes = require("./routes/deviceRoutes");
 const playbackRoutes = require("./routes/playbackRoutes");
 const cors = require("cors");
-const app = express(); 
+const app = express();
 const server = http.createServer(app);
 //const wss = new WebSocket.Server({ server });
 
 const io = new Server(server, {
   cors: {
-    origin: "*", 
+    origin: "*",
   }
 });
 
@@ -24,19 +24,21 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.use("/api", deviceRoutes);
+
+//playback session
 //app.use("/api", playbackRoutes);
 
 io.on("connection", (socket) => {
-  //console.log("Frontend connected:", socket.id);
+  console.log("Frontend connected:", socket.id);
 
   socket.on("disconnect", () => {
-    //console.log("Frontend disconnected:", socket.id);
+    console.log("Frontend disconnected:", socket.id);
   });
 });
 
 // broadcast to clients: frontend users
 function broadcast(data) {
- io.emit("device-update", data);
+  io.emit("device-update", data);
 }
 
 connectDB()
