@@ -1,73 +1,79 @@
-.sidebarWrapper {
-  display: flex;
-  flex-direction: column;
-  margin-top: 60px;        /* push below topbar */
-  height: calc(100% - 60px);
-}
-
+/* Sidebar floating card */
 .sidebar {
-  width: 50px;
-  background: #004675;
+  width: 30px;
+  background: var(--primary-dark);
   color: white;
-  padding: 90px 10px 30px 10px; /* 30px existing + 60px extra at top */
+  padding: 90px 10px 30px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  height: 100%;
-  top: 60px;               /* align with topbar */
-  justify-content: center;
+
+  /* FLOATING CARD EFFECT */
+  position: fixed;
+  top: 80px;        /* below topbar */
+  left: 12px;       /* space from left edge */
+  bottom: 12px;     /* space from bottom */
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 1000;    /* above map */
 }
 
+/* Menu items inside sidebar */
 .menuItem {
   position: relative;
   cursor: pointer;
 }
 
+/* Buttons */
 .button {
   background: none;
   border: none;
-  color: white;
+  color: #ffffff;
   cursor: pointer;
   padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.button:hover {
-  background-color: #0c4972ff;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
+/* Hover and active states */
+.button:hover {
+  background-color: #ffffff15; 
+  color: var(--primary-extra);           
+  box-shadow: 0 0 6px rgba(71, 71, 71, 0.6);
+}
+
+.active .button {
+  background-color: #f7f7f734; 
+  color: var(--primary-extra);           
+  box-shadow: 0 0 6px rgba(71, 71, 71, 0.6);
+}
+
+/* Tooltip */
 .tooltip {
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
   position: absolute;
   left: 60px;
   top: 50%;
-  transform: translateY(-50%);
-  background: #000;
-  color: #fff;
+  transform: translateY(-50%) translateX(-5px);
+  background: #1F2937;
+  color: #F9FAFB;
   padding: 5px 10px;
   white-space: nowrap;
   font-size: 12px;
   pointer-events: none;
   z-index: 9999;
-  border: white solid 1px;
+  border: 1px solid #374151;
+  border-radius: 4px;
 }
+
 .menuItem:hover .tooltip {
   visibility: visible;
   opacity: 1;
-}
-
-
-.input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #aaa;
-  border-radius: 6px;
-}
-
-.active .button {
-  background-color: #0c4972ff;
+  transform: translateY(-50%) translateX(0);
 }
