@@ -1,93 +1,101 @@
 const WebSocket = require("ws");
 const Device = require("../models/Device");
 const DeviceLog = require("../models/DeviceLog");
+const PlaybackSession = require("../models/PlaybackSession");
 const { markCacheUpdated } = require("../controllers/deviceController");
 
-
 function initWebSocketDevice(broadcast) {
-
   const WS_URL = "ws://192.168.0.183:8080";
+  const WS_URL_LOCAL = "ws://localhost:8080";
+  const ws = new WebSocket(WS_URL_LOCAL);
 
-  const ws = new WebSocket(WS_URL);
-
-  // connection established
+  // --- WS CONNECTED ---
   ws.on("open", () => {
-    console.log("✅ WebSocket connection established:", WS_URL);
-    broadcast({ type: "source-status", status: "online" });
+    console.log("✅ WebSocket connected:", WS_URL);
+    broadcast?.({ type: "source-status", status: "online" });
   });
 
-  // message received
-  ws.on("message", async (message) => {
+  // --- WS MESSAGE ---
+  ws.on("message", async (rawMessage) => {
     try {
-      const data = JSON.parse(message);
-      console.log("Received data", data);
+      const data = JSON.parse(rawMessage);
+      console.log("Received:", data);
 
+      // Only handle device position messages
       if (data.type !== "position" || !data.device_id) return;
 
-      if (
-        typeof data.latitude !== "number" ||
-        typeof data.longitude !== "number" ||
-        data.latitude < -90 || data.latitude > 90 ||
-        data.longitude < -180 || data.longitude > 180
-      ) {
-        console.warn(`⚠️ Invalid coordinates from device ${data.device_id}`);
-        return; // stop here, skip invalid message
+      const { latitude, longitude } = data;
+
+      // Validate coordinates
+      const validLat = typeof latitude === "number" && latitude >= -90 && latitude <= 90;
+      const validLon = typeof longitude === "number" && longitude >= -180 && longitude <= 180;
+      if (!validLat || !validLon) {
+        console.warn(`⚠️ Invalid GPS from device ${data.device_id}`);
+        return;
       }
 
-      // update device info in DB
-      const updated = await Device.findOneAndUpdate(
+      const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
+
+      // --- Update device latest info ---
+      const updatedDevice = await Device.findOneAndUpdate(
         { id: data.device_id },
-        {
-          latitude: data.latitude,
-          longitude: data.longitude,
-          timestamp:
-            data.timestamp ? new Date(data.timestamp) : new Date(),
-        },
+        { latitude, longitude, timestamp },
         { new: true, upsert: true, setDefaultsOnInsert: true }
       );
 
+      // Mark cache for frontend
       markCacheUpdated();
 
-      // device log entry
-      const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+      // --- Determine session_id if active session exists ---
+      let session_id = null;
+      try {
+        const activeSession = await PlaybackSession.findOne({ is_active: true });
+        if (activeSession && (activeSession.device_id === "all" || activeSession.device_id === data.device_id)) {
+          session_id = activeSession._id;
+        }
+      } catch (err) {
+        console.error("⚠️ PlaybackSession check error:", err.message);
+      }
+
+      // --- Always log device position ---
       try {
         await DeviceLog.create({
           device_id: data.device_id,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          timestamp: new Date(),
-          session_date: today,
+          latitude,
+          longitude,
+          timestamp,
+          session_date: timestamp.toISOString().split("T")[0],
+          session_id, // null if no active session
         });
-      } catch (dbErr) {
-        console.error("⚠️ Failed to write DeviceLog:", dbErr.message);
+      } catch (logErr) {
+        console.error("⚠️ DeviceLog error:", logErr.message);
       }
 
-      // broadcast to frontend clients
-      if (broadcast) {
-        broadcast({
-          type: "position",
-          device_id: updated.id,
-          latitude: updated.latitude,
-          longitude: updated.longitude,
-          timestamp: updated.timestamp,
-        });
-      }
+      // --- Broadcast to frontend ---
+      broadcast?.({
+        type: "position",
+        device_id: updatedDevice.id,
+        latitude: updatedDevice.latitude,
+        longitude: updatedDevice.longitude,
+        timestamp: updatedDevice.timestamp,
+      });
+
     } catch (err) {
-      console.error("⚠️ WebSocket message error:", err);
+      console.error("⚠️ WebSocket JSON parse error:", err);
     }
   });
 
-  //disconnection handling
+  // --- WS CLOSED ---
   ws.on("close", () => {
-    console.log("⚠️ WebSocket disconnected, retrying in 5s...");
-    broadcast({ type: "source-status", status: "offline" });
-    setTimeout(() => initWebSocketDevice(broadcast), 5000); // auto reconnect
+    console.log("⚠️ WebSocket disconnected. Reconnecting in 5s...");
+    broadcast?.({ type: "source-status", status: "offline" });
+    setTimeout(() => initWebSocketDevice(broadcast), 5000);
   });
 
-  // error handling
+  // --- WS ERROR ---
   ws.on("error", (err) => {
     console.error("❌ WebSocket error:", err.message);
-    broadcast({ type: "source-status", status: "offline" });
+    broadcast?.({ type: "source-status", status: "offline" });
   });
 }
 

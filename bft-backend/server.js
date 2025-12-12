@@ -25,8 +25,7 @@ app.use(express.json());
 
 app.use("/api", deviceRoutes);
 
-//playback session
-//app.use("/api", playbackRoutes);
+app.use("/api/playback", playbackRoutes);
 
 io.on("connection", (socket) => {
   console.log("Frontend connected:", socket.id);

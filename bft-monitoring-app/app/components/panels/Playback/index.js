@@ -2,32 +2,43 @@
 import { useState } from "react";
 import { FaPlay, FaPause, FaStop, FaBackward, FaCircle } from "react-icons/fa";
 import styles from "./Playback.module.css";
+import { usePlayback } from "@context/PlaybackContext";
+import { useDevices } from "@context/DeviceContext";
 
 export default function PlaybackPanel() {
+  const {
+    testSets,
+    selectedSession,
+    setSelectedSession,
+    playbackLogs,
+    currentPositions,
+    currentIndex,
+    isPlaying,
+    isPaused,
+    isRecording,
+    deviceRecord,
+    setDeviceRecord,
+    play,
+    pause,
+    stopPlayback,
+    startRecording,
+    stopRecording,
+    speed,
+    setPlaybackSpeed,
+  } = usePlayback();
+
+  const { devices: liveDevices } = useDevices(); // get live devices for recording
+
   const [tab, setTab] = useState("record");
-  const [testSetName, setTestSetName] = useState("");
+  const [recordingName, setRecordingName] = useState(""); // bind to input
 
-  // Dummy Data (for UI-only)
-  const devices = [
-    { id: "DEV-001", name: "Device Alpha" },
-    { id: "DEV-002", name: "Device Bravo" },
-  ];
-
-  const dummyTestSets = [
-    { _id: "TS-111", name: "Route Test 1", date: "2025-02-01", start_time: Date.now(), end_time: Date.now() },
-    { _id: "TS-222", name: "Highway Test", date: "2025-02-03", start_time: Date.now(), end_time: Date.now() },
-  ];
-
-  const [device, setDevice] = useState("");
-  const [selectedTestSet, setSelectedTestSet] = useState(null);
-
-  const [isRecording, setIsRecording] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [activeControl, setActiveControl] = useState(null);
+  const handleSessionChange = (e) => {
+    const session = testSets.find((s) => s._id === e.target.value);
+    setSelectedSession(session);
+  };
 
   return (
     <div className={`${styles.panel} ${styles.open}`}>
-      
       {/* Tab Bar */}
       <div className={styles.tabBar}>
         <button
@@ -45,7 +56,6 @@ export default function PlaybackPanel() {
       </div>
 
       <div className={styles.pageContent}>
-
         {/* RECORD TAB */}
         {tab === "record" && (
           <div className={styles.page}>
@@ -56,11 +66,11 @@ export default function PlaybackPanel() {
             <div className={styles.selectWrapper}>
               <select
                 className={styles.input}
-                value={device}
-                onChange={(e) => setDevice(e.target.value)}
+                value={deviceRecord}
+                onChange={(e) => setDeviceRecord(e.target.value)}
               >
-                <option value="">Select device...</option>
-                {devices.map((d) => (
+                <option value="all">All Devices</option>
+                {liveDevices.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name} ({d.id})
                   </option>
@@ -68,12 +78,13 @@ export default function PlaybackPanel() {
               </select>
             </div>
 
+            {/* Test Set Name */}
             <label className={styles.label}>Test Set Name</label>
             <input
               className={styles.input}
-              value={testSetName}
-              onChange={(e) => setTestSetName(e.target.value)}
               placeholder="Enter test set name"
+              value={recordingName}
+              onChange={(e) => setRecordingName(e.target.value)}
               disabled={isRecording}
             />
 
@@ -81,26 +92,19 @@ export default function PlaybackPanel() {
             <div className={styles.recordButtons}>
               <button
                 className={styles.button}
-                disabled={!device || !testSetName || isRecording}
-                onClick={() => setIsRecording(true)}
+                onClick={() => startRecording(deviceRecord, recordingName)}
+                disabled={isRecording}
               >
                 <FaCircle style={{ marginRight: "6px", color: "red" }} /> Start Record
               </button>
-
               <button
                 className={styles.button}
+                onClick={stopRecording}
                 disabled={!isRecording}
-                onClick={() => setIsRecording(false)}
               >
                 <FaStop style={{ marginRight: "6px" }} /> Stop
               </button>
             </div>
-
-            {isRecording && (
-              <p className={styles.recordingIndicator}>
-                <FaCircle style={{ color: "red", marginRight: "6px" }} /> Recording...
-              </p>
-            )}
           </div>
         )}
 
@@ -109,17 +113,18 @@ export default function PlaybackPanel() {
           <div className={styles.page}>
             <h2 className={styles.subHeading}>Playback</h2>
 
+            {/* Device Selector */}
             <label className={styles.label}>Device</label>
             <div className={styles.selectWrapper}>
               <select
                 className={styles.input}
-                value={device}
-                onChange={(e) => setDevice(e.target.value)}
+                value={deviceRecord}
+                onChange={(e) => setDeviceRecord(e.target.value)}
               >
-                <option value="">Select device...</option>
-                {devices.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} ({d.id})
+                <option value="all">All Devices</option>
+                {Object.keys(playbackLogs).map((id) => (
+                  <option key={id} value={id}>
+                    {id}
                   </option>
                 ))}
               </select>
@@ -127,75 +132,93 @@ export default function PlaybackPanel() {
 
             {/* Test Set Selector */}
             <label className={styles.label}>Test Set</label>
-            <select
-              className={styles.input}
-              value={selectedTestSet?._id || ""}
-              onChange={(e) =>
-                setSelectedTestSet(dummyTestSets.find((t) => t._id === e.target.value))
-              }
-              disabled={!device}
-            >
-              <option value="">Select Test Set...</option>
-              {dummyTestSets.map((t) => (
-                <option key={t._id} value={t._id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Metadata Display */}
-            {selectedTestSet && (
-              <div className={styles.detailsBox}>
-                <p><strong>Date:</strong> {selectedTestSet.date}</p>
-                <p><strong>Start:</strong> {new Date(selectedTestSet.start_time).toLocaleTimeString()}</p>
-                <p><strong>End:</strong> {new Date(selectedTestSet.end_time).toLocaleTimeString()}</p>
-              </div>
-            )}
+            <div className={styles.selectWrapper}>
+              <select
+                className={styles.input}
+                value={selectedSession?._id || ""}
+                onChange={handleSessionChange}
+              >
+                <option value="">Select Test Set...</option>
+                {testSets.map((t) => (
+                  <option key={t._id} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Playback Controls */}
             <div className={styles.playbackControls}>
               <div className={styles.buttons}>
-                <button className={styles.controlButton}>
+                {/* Rewind button */}
+                <button
+                  className={styles.controlButton}
+                  disabled={!selectedSession}
+                  onClick={() => {
+                    // Reset index and positions for selected device or all
+                    const resetIndex = { ...currentIndex };
+                    const resetPos = { ...currentPositions };
+                    const devicesToReset =
+                      deviceRecord && deviceRecord !== "all"
+                        ? [deviceRecord]
+                        : Object.keys(playbackLogs);
+
+                    devicesToReset.forEach((id) => {
+                      resetIndex[id] = 0;
+                      resetPos[id] = playbackLogs[id][0] || null;
+                    });
+
+                    setCurrentIndex(resetIndex);
+                    setCurrentPositions(resetPos);
+                  }}
+                >
                   <FaBackward />
                 </button>
 
+                {/* Pause button */}
                 <button
-                  className={`${styles.controlButton} ${activeControl === "pause" ? styles.pauseActive : ""}`}
-                  disabled={!isPlaying}
-                  onClick={() => {
-                    setIsPlaying(false);
-                    setActiveControl("pause");
-                  }}
+                  className={`${styles.controlButton} ${isPaused ? styles.pauseActive : ""}`}
+                  disabled={!isPlaying && !isPaused}
+                  onClick={pause}
                 >
                   <FaPause />
                 </button>
 
+                {/* Play button */}
                 <button
-                  className={`${styles.controlButton} ${activeControl === "play" ? styles.playActive : ""}`}
-                  disabled={!selectedTestSet}
-                  onClick={() => {
-                    setIsPlaying(true);
-                    setActiveControl("play");
-                  }}
+                  className={`${styles.controlButton} ${isPlaying ? styles.playActive : ""}`}
+                  disabled={!selectedSession}
+                  onClick={play}
                 >
                   <FaPlay />
                 </button>
 
+                {/* Stop button */}
                 <button
-                  className={`${styles.controlButton} ${activeControl === "stop" ? styles.stopActive : ""}`}
-                  disabled={!isPlaying}
-                  onClick={() => {
-                    setIsPlaying(false);
-                    setActiveControl("stop");
-                  }}
+                  className={styles.controlButton}
+                  disabled={!isPlaying && !isPaused}
+                  onClick={stopPlayback}
                 >
                   <FaStop />
                 </button>
               </div>
+
+              {/* Speed Control */}
+              <div style={{ marginTop: "10px" }}>
+                <label className={styles.label}>Speed:</label>
+                <input
+                  type="number"
+                  min={0.1}
+                  max={10}
+                  step={0.1}
+                  value={speed}
+                  onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+                />
+                <span> x</span>
+              </div>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

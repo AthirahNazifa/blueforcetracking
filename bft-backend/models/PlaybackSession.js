@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 
 const PlaybackSessionSchema = new mongoose.Schema({
-    name: String, //optional
-    device_id: { type: String, required: true},
-    start_time: { type: Date, required: true},
-    end_time: { type: Date, require: true},
-    created_at: { type: Date, default: Date.now}
+  name: { type: String, required: true },
+  device_id: { type: String, default: "all" },
+  is_active: { type: Boolean, default: true },
+  start_time: { type: Date, default: Date.now },
+  end_time: { type: Date },
+  logs: { type: Array, default: [] },
 });
 
 module.exports = mongoose.model("PlaybackSession", PlaybackSessionSchema);
