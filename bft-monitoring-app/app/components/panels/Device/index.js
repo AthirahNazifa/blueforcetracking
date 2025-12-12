@@ -92,6 +92,15 @@ export default function DevicePanel() {
   const handleSelectDevice = (device) => {
     setSelectedDevice(device);
     setPendingDeviceId(null);
+
+    // Ask the map iframe to show and pin this device popup
+    const iframe = document.getElementById("bft-map-iframe");
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage(
+        { type: "SHOW_DEVICE", payload: { device_id: device.device_id || device.id || device._id } },
+        "http://localhost:3001"
+      );
+    }
   };
 
   return (
@@ -132,6 +141,12 @@ export default function DevicePanel() {
             setSelectedDevice(null);
             setPendingDeviceId(null);
             setAddress("");
+
+            // Tell map to clear any pinned popup
+            const iframe = document.getElementById("bft-map-iframe");
+            if (iframe?.contentWindow) {
+              iframe.contentWindow.postMessage({ type: "CLEAR_DEVICE_SELECTION" }, "http://localhost:3001");
+            }
           }}
         />
       )}
