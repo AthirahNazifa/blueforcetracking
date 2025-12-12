@@ -70,11 +70,26 @@
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  background-color: white;
-  color: black;
+  background-color: #fff !important;
+  color: #000 !important;
   font-size: 13px;
   margin-bottom: 10px;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #004675;
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+.input:hover {
+  background-color: #fff !important;
+  color: #000 !important;
 }
 
 .input::placeholder {
@@ -124,18 +139,6 @@
   gap: 10px;
 }
 
-.timeline {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: #004675;
-}
-
-.slider {
-  flex: 1;
-}
-
 .buttons {
   display: flex;
   gap: 5px;
@@ -153,6 +156,27 @@
 
 .controlButton:hover {
   background-color: var(--primary-dark);
+}
+
+.controlButton.active {
+  background-color: #0d8a3f;
+  box-shadow: 0 0 0 2px rgba(13, 138, 63, 0.3);
+}
+
+/* Distinct active colors per control */
+.controlButton.playActive {
+  background-color: #0d8a3f;
+  box-shadow: 0 0 0 2px rgba(13, 138, 63, 0.35);
+}
+
+.controlButton.pauseActive {
+  background-color: #e0a800;
+  box-shadow: 0 0 0 2px rgba(224, 168, 0, 0.35);
+}
+
+.controlButton.stopActive {
+  background-color: #c1121f;
+  box-shadow: 0 0 0 2px rgba(193, 18, 31, 0.35);
 }
 
 .speedButton {
@@ -204,4 +228,93 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Style the dropdown options */
+.input option {
+  padding: 8px;
+  background-color: #fff !important;
+  color: #000 !important; /* Ensure text is visible */
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.input option:hover {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+.input option:checked {
+  background-color: #e6f0fa !important;
+  color: #000 !important;
+}
+
+/* Ensure select text is visible */
+.input select,
+select.input {
+  color: #000 !important;
+  background-color: #fff !important;
+}
+
+/* Optional: visually differentiate ongoing recordings */
+.input option[disabled] {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Optional: add custom arrow using pseudo-element */
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.selectWrapper::after {
+  content: "▾";                  /* small down arrow */
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #333;
+  font-size: 14px;
+  z-index: 1;
+}
+
+.selectWrapper select {
+  padding-right: 30px; /* Make room for arrow */
+  cursor: pointer;
+}
+
+.recordButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.recordingIndicator {
+  padding: 10px;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c00;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.detailsBox {
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.detailsBox p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #333;
 }

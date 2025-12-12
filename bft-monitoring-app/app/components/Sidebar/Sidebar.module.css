@@ -12,7 +12,7 @@
   /* FLOATING CARD EFFECT */
   position: fixed;
   top: 80px;        /* below topbar */
-  left: 12px;       /* space from left edge */
+  left: 8px;       /* space from left edge */
   bottom: 12px;     /* space from bottom */
   height: auto;
   border-radius: 14px;
